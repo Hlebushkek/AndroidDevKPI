@@ -2,58 +2,79 @@ package com.example.lab1
 
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
+import androidx.fragment.app.Fragment
 import com.example.lab1.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),
+    StyleSelectionFragmentDelegate, FontSelectionFragmentDelegate {
 
     private lateinit var mainBinding: ActivityMainBinding
-    private val avaliableFonts = arrayOf(
+
+    private lateinit var styleSelectionFrag: SelectionButtonsFragment
+    private lateinit var fontSelectionFrag: FontSelectionFragment
+
+    private val availableFonts = arrayOf(
         "sans-serif", "sans-serif-light", "random"
     )
+
+    private var selectedStyle: Int = 0
+    private var selectedFontName: String = ""
+
+    fun applyFont(view: View) {
+        val newTypeFace = Typeface.create(selectedFontName, selectedStyle) //Always return value
+        mainBinding.textInputEditText.typeface = newTypeFace
+    }
+
+    fun clearFont(view: View) {
+        styleSelectionFrag.reset()
+        fontSelectionFrag.reset()
+
+        applyFont(findViewById(mainBinding.okButton.id))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainBinding = ActivityMainBinding.inflate(LayoutInflater.from(this))
         setContentView(mainBinding.root)
 
-        for (name in avaliableFonts) {
-            val button = RadioButton(this)
-            button.text = name
-            button.id = View.generateViewId()
-            mainBinding.fontRadioGroup.addView(button)
-        }
-        mainBinding.fontRadioGroup.check(mainBinding.fontRadioGroup.children.first().id)
+        styleSelectionFrag = SelectionButtonsFragment.newInstance()
+        styleSelectionFrag.delegate = this
+        openFrag(styleSelectionFrag, R.id.textStylePlaceholder)
+
+        fontSelectionFrag = FontSelectionFragment.newInstance()
+        fontSelectionFrag.delegate = this
+        openFrag(fontSelectionFrag, R.id.fontSelectionPlaceholder)
     }
 
-    fun applyFont(view: View) {
-        val fontName = getSelectedFont()
-        val typefaceID = getSelectedFontStyle()
+    override fun onStart() {
+        super.onStart()
 
-        val newTypeFace = Typeface.create(fontName, typefaceID) //Always return value
-        mainBinding.textInputEditText.typeface = newTypeFace
+        fontSelectionFrag.setupWith(availableFonts)
     }
 
-    private fun getSelectedFont(): String {
-        val selectedID = mainBinding.fontRadioGroup.checkedRadioButtonId
-        val selectedButton = mainBinding.fontRadioGroup.findViewById<RadioButton>(selectedID) ?: return ""
+    //MARK: Implement Interfaces
 
-        return selectedButton.text.toString()
+    override fun selectedStyleDidChange(type: Int) {
+        selectedStyle = type
+        Log.d("TEST", type.toString())
     }
 
-    private fun getSelectedFontStyle(): Int {
-        val selectedID = mainBinding.styleRadioGroup.checkedRadioButtonId
-
-        return mainBinding.styleRadioGroup.indexOfChild(findViewById(selectedID))
+    override fun fontSelectionDidChange(name: String) {
+        selectedFontName = name
     }
 
-    fun clearFont(view: View) {
-        mainBinding.fontRadioGroup.check(mainBinding.fontRadioGroup.children.first().id)
-        mainBinding.styleRadioGroup.check(mainBinding.styleRadioGroup.children.first().id)
-        applyFont(findViewById(mainBinding.okButton.id))
+    //MARK: Helpers
+
+    private fun openFrag(frag: Fragment, holderID: Int) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(holderID, frag)
+            .commit()
     }
 }
