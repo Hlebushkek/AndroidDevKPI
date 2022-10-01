@@ -5,15 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
-import android.widget.RadioGroup
 import androidx.core.view.children
-import com.example.lab1.databinding.ActivityMainBinding
-import com.example.lab1.databinding.FragmentSelectionButtonsBinding
+import com.example.lab1.databinding.FragmentFontStyleSelectionBinding
 
-class SelectionButtonsFragment : Fragment() {
+class FontStyleSelectionFragment : Fragment() {
 
-    private lateinit var binding: FragmentSelectionButtonsBinding
+    private lateinit var binding: FragmentFontStyleSelectionBinding
 
     public var delegate: StyleSelectionFragmentDelegate? = null
 
@@ -21,7 +18,7 @@ class SelectionButtonsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentSelectionButtonsBinding.inflate(inflater)
+        binding = FragmentFontStyleSelectionBinding.inflate(inflater)
 
         binding.styleRadioGroup.setOnCheckedChangeListener { _, id ->
             var index = 0
@@ -40,6 +37,6 @@ class SelectionButtonsFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() = SelectionButtonsFragment()
+        fun newInstance() = FontStyleSelectionFragment()
     }
 }

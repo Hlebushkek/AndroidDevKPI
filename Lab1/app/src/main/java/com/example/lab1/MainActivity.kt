@@ -1,80 +1,39 @@
 package com.example.lab1
 
-import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
-import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.children
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.lab1.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity(),
-    StyleSelectionFragmentDelegate, FontSelectionFragmentDelegate {
+class MainActivity : AppCompatActivity() {
 
-    private lateinit var mainBinding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
 
-    private lateinit var styleSelectionFrag: SelectionButtonsFragment
-    private lateinit var fontSelectionFrag: FontSelectionFragment
+    private lateinit var mainFragment: MainFragment
+    private lateinit var historyFragment: HistoryFragment
 
-    private val availableFonts = arrayOf(
-        "sans-serif", "sans-serif-light", "random"
-    )
-
-    private var selectedStyle: Int = 0
-    private var selectedFontName: String = ""
-
-    fun applyFont(view: View) {
-        val newTypeFace = Typeface.create(selectedFontName, selectedStyle) //Always return value
-        mainBinding.textInputEditText.typeface = newTypeFace
-    }
-
-    fun clearFont(view: View) {
-        styleSelectionFrag.reset()
-        fontSelectionFrag.reset()
-
-        applyFont(findViewById(mainBinding.okButton.id))
-    }
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mainBinding = ActivityMainBinding.inflate(LayoutInflater.from(this))
-        setContentView(mainBinding.root)
+        binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
+        setContentView(binding.root)
 
-        styleSelectionFrag = SelectionButtonsFragment.newInstance()
-        styleSelectionFrag.delegate = this
-        openFrag(styleSelectionFrag, R.id.textStylePlaceholder)
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(binding.fragmentPlaceholder.id) as NavHostFragment
+        navController = navHostFragment.navController
 
-        fontSelectionFrag = FontSelectionFragment.newInstance()
-        fontSelectionFrag.delegate = this
-        openFrag(fontSelectionFrag, R.id.fontSelectionPlaceholder)
+        mainFragment = MainFragment.newInstance()
+        historyFragment = HistoryFragment.newInstance()
     }
 
-    override fun onStart() {
-        super.onStart()
-
-        fontSelectionFrag.setupWith(availableFonts)
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
-    //MARK: Implement Interfaces
-
-    override fun selectedStyleDidChange(type: Int) {
-        selectedStyle = type
-        Log.d("TEST", type.toString())
-    }
-
-    override fun fontSelectionDidChange(name: String) {
-        selectedFontName = name
-    }
-
-    //MARK: Helpers
-
-    private fun openFrag(frag: Fragment, holderID: Int) {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(holderID, frag)
-            .commit()
-    }
 }

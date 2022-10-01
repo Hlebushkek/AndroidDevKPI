@@ -10,13 +10,16 @@ import android.view.ViewGroup
 import android.widget.RadioButton
 import androidx.core.view.children
 import com.example.lab1.databinding.FragmentFontSelectionBinding
-import com.example.lab1.databinding.FragmentSelectionButtonsBinding
 
 class FontSelectionFragment : Fragment() {
 
     private lateinit var binding: FragmentFontSelectionBinding
 
     var delegate: FontSelectionFragmentDelegate? = null
+
+    private val availableFonts = arrayOf(
+        "sans-serif", "sans-serif-light", "random"
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,6 +32,8 @@ class FontSelectionFragment : Fragment() {
             delegate?.fontSelectionDidChange(radio.text.toString())
         }
 
+        setupFonts()
+
         return binding.root
     }
 
@@ -36,8 +41,8 @@ class FontSelectionFragment : Fragment() {
         binding.fontRadioGroup.check(binding.fontRadioGroup.children.first().id)
     }
 
-    fun setupWith(fonts: Array<String>) {
-        for (name in fonts) {
+    private fun setupFonts() {
+        for (name in availableFonts) {
             val button = RadioButton(context)
             button.text = name
             button.id = View.generateViewId()
