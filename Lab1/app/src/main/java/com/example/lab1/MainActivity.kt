@@ -2,19 +2,16 @@ package com.example.lab1
 
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.RadioButton
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import com.example.lab1.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(),
     StyleSelectionFragmentDelegate, FontSelectionFragmentDelegate {
 
-    private lateinit var mainBinding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
 
     private lateinit var styleSelectionFrag: SelectionButtonsFragment
     private lateinit var fontSelectionFrag: FontSelectionFragment
@@ -29,20 +26,21 @@ class MainActivity : AppCompatActivity(),
 
     fun applyFont(view: View) {
         val newTypeFace = Typeface.create(selectedFontName, selectedStyle) //Always return value
-        mainBinding.textInputEditText.typeface = newTypeFace
+        binding.textInputEditText.typeface = newTypeFace
     }
 
     fun clearFont(view: View) {
+        binding.textInputEditText.text?.clear()
         styleSelectionFrag.reset()
         fontSelectionFrag.reset()
 
-        applyFont(findViewById(mainBinding.okButton.id))
+        applyFont(findViewById(binding.okButton.id))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mainBinding = ActivityMainBinding.inflate(LayoutInflater.from(this))
-        setContentView(mainBinding.root)
+        binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
+        setContentView(binding.root)
 
         styleSelectionFrag = SelectionButtonsFragment.newInstance()
         styleSelectionFrag.delegate = this
@@ -63,7 +61,6 @@ class MainActivity : AppCompatActivity(),
 
     override fun selectedStyleDidChange(type: Int) {
         selectedStyle = type
-        Log.d("TEST", type.toString())
     }
 
     override fun fontSelectionDidChange(name: String) {
