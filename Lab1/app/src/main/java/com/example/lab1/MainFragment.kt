@@ -2,13 +2,13 @@ package com.example.lab1
 
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.example.lab1.databinding.FragmentMainBinding
+import com.google.android.material.snackbar.Snackbar
 
 class MainFragment : Fragment(),
     StyleSelectionFragmentDelegate, FontSelectionFragmentDelegate{
@@ -24,15 +24,28 @@ class MainFragment : Fragment(),
     private var selectedFontName: String = ""
 
     private fun applyFont() {
-        val newTypeFace = Typeface.create(selectedFontName, selectedStyle) //Always return value
-        binding.textInputEditText.typeface = newTypeFace
+        context?.let {
+            val text = binding.textInputEditText.text.toString()
+            if (text.isEmpty()) { return }
 
-        dbHelper.addHistoryUnit(binding.textInputEditText.text.toString(), selectedFontName, selectedStyle)
+            val typeFace = Typeface.create(selectedFontName, selectedStyle) //Always return value
+
+            val dialog = PopupDialogFragment(text, typeFace)
+
+            dialog.onDismissCallback = {
+                dbHelper.addHistoryUnit(text, selectedFontName, selectedStyle)
+                Snackbar.make(binding.root, "Info was saved to history", Snackbar.LENGTH_SHORT).show()
+            }
+
+            dialog.show(requireActivity().supportFragmentManager, "popup")
+        }
     }
 
     private fun clearFont() {
         styleSelectionFrag.reset()
         fontSelectionFrag.reset()
+
+        binding.textInputEditText.text?.clear()
 
         applyFont()
     }
