@@ -18,7 +18,8 @@ class FontSelectionFragment : Fragment() {
     var delegate: FontSelectionFragmentDelegate? = null
 
     private val availableFonts = arrayOf(
-        "sans-serif", "sans-serif-light", "random"
+        "sans-serif", "sans-serif-light", "monospace", "cursive", "casual",
+        "times-new-roman", "palatino"
     )
 
     override fun onCreateView(
