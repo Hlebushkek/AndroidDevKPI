@@ -13,7 +13,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val availableFonts = arrayOf(
-        "sans-serif", "sans-serif-light", "random"
+        "sans-serif", "sans-serif-light", "monospace", "cursive", "casual",
+        "times-new-roman", "palatino"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +53,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun clearFont(view: View) {
+        binding.textInputEditText.text?.clear()
         binding.fontRadioGroup.check(binding.fontRadioGroup.children.first().id)
         binding.styleRadioGroup.check(binding.styleRadioGroup.children.first().id)
         applyFont(findViewById(binding.okButton.id))
