@@ -11,23 +11,23 @@ import com.example.lab1.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var mainBinding: ActivityMainBinding
-    private val avaliableFonts = arrayOf(
+    private lateinit var binding: ActivityMainBinding
+    private val availableFonts = arrayOf(
         "sans-serif", "sans-serif-light", "random"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mainBinding = ActivityMainBinding.inflate(LayoutInflater.from(this))
-        setContentView(mainBinding.root)
+        binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
+        setContentView(binding.root)
 
-        for (name in avaliableFonts) {
+        for (name in availableFonts) {
             val button = RadioButton(this)
             button.text = name
             button.id = View.generateViewId()
-            mainBinding.fontRadioGroup.addView(button)
+            binding.fontRadioGroup.addView(button)
         }
-        mainBinding.fontRadioGroup.check(mainBinding.fontRadioGroup.children.first().id)
+        binding.fontRadioGroup.check(binding.fontRadioGroup.children.first().id)
     }
 
     fun applyFont(view: View) {
@@ -35,25 +35,25 @@ class MainActivity : AppCompatActivity() {
         val typefaceID = getSelectedFontStyle()
 
         val newTypeFace = Typeface.create(fontName, typefaceID) //Always return value
-        mainBinding.textInputEditText.typeface = newTypeFace
+        binding.textInputEditText.typeface = newTypeFace
     }
 
     private fun getSelectedFont(): String {
-        val selectedID = mainBinding.fontRadioGroup.checkedRadioButtonId
-        val selectedButton = mainBinding.fontRadioGroup.findViewById<RadioButton>(selectedID) ?: return ""
+        val selectedID = binding.fontRadioGroup.checkedRadioButtonId
+        val selectedButton = binding.fontRadioGroup.findViewById<RadioButton>(selectedID) ?: return ""
 
         return selectedButton.text.toString()
     }
 
     private fun getSelectedFontStyle(): Int {
-        val selectedID = mainBinding.styleRadioGroup.checkedRadioButtonId
+        val selectedID = binding.styleRadioGroup.checkedRadioButtonId
 
-        return mainBinding.styleRadioGroup.indexOfChild(findViewById(selectedID))
+        return binding.styleRadioGroup.indexOfChild(findViewById(selectedID))
     }
 
     fun clearFont(view: View) {
-        mainBinding.fontRadioGroup.check(mainBinding.fontRadioGroup.children.first().id)
-        mainBinding.styleRadioGroup.check(mainBinding.styleRadioGroup.children.first().id)
-        applyFont(findViewById(mainBinding.okButton.id))
+        binding.fontRadioGroup.check(binding.fontRadioGroup.children.first().id)
+        binding.styleRadioGroup.check(binding.styleRadioGroup.children.first().id)
+        applyFont(findViewById(binding.okButton.id))
     }
 }
