@@ -25,8 +25,14 @@ class MainActivity : AppCompatActivity(),
     private var selectedFontName: String = ""
 
     fun applyFont(view: View) {
-        val newTypeFace = Typeface.create(selectedFontName, selectedStyle) //Always return value
-        binding.textInputEditText.typeface = newTypeFace
+        val text = binding.textInputEditText.text.toString()
+        if (text.isEmpty()) { return }
+
+        val typeFace = Typeface.create(selectedFontName, selectedStyle) //Always return value
+
+        val dialog = PopupDialogFragment(text, typeFace)
+
+        dialog.show(supportFragmentManager, "popup")
     }
 
     fun clearFont(view: View) {
