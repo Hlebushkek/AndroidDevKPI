@@ -20,7 +20,8 @@ class MainActivity : AppCompatActivity(),
     private lateinit var fontSelectionFrag: FontSelectionFragment
 
     private val availableFonts = arrayOf(
-        "sans-serif", "sans-serif-light", "random"
+        "sans-serif", "sans-serif-light", "monospace", "cursive", "casual",
+        "times-new-roman", "palatino"
     )
 
     private var selectedStyle: Int = 0
