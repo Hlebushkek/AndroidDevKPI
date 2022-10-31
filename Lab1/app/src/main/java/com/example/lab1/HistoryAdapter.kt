@@ -19,11 +19,21 @@ class HistoryAdapter(private val history: Array<HistoryItem>) :
         var item = history[position]
         holder.textView.text = item.text
         holder.fontNameView.text = item.fontName
-        holder.fontStyleView.text = item.fontStyle.toString()
+        holder.fontStyleView.text = fontStyleToString(item.fontStyle)
     }
 
     override fun getItemCount(): Int {
         return history.size
+    }
+
+    private fun fontStyleToString(fontStyle: Int): String {
+        return when(fontStyle) {
+            0 -> "Normal"
+            1 -> "Bold"
+            2 -> "Italic"
+            3 -> "Bold Italic"
+            else -> "[UNDEFINED]"
+        }
     }
 
     class HistoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
