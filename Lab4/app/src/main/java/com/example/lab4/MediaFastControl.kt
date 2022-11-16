@@ -27,24 +27,17 @@ class MediaFastControl : Fragment() {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        delegate = this.activity as MediaFastControlDelegate
-    }
-
     private fun toggleMedia(view: View) {
-        Log.d("!!!", "toggleMedia")
-        Log.d("!!!", delegate.toString())
         delegate?.mediaDidToggle()
     }
 
     private fun fastForward(view: View) {
         val value: Int = when (view) {
-            binding.backwardButton -> -1
-            binding.forwardButton -> 1
+            binding.backwardButton -> -2
+            binding.forwardButton -> 2
             else -> { 0 }
         }
-        Log.d("!!!", delegate.toString())
+
         delegate?.mediaDidFastForwardBy(value)
     }
 

@@ -18,13 +18,7 @@ class MediaProgressBar : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentMediaProgressBarBinding.inflate(inflater)
-
         return binding.root
-    }
-
-    override fun onStart() {
-        super.onStart()
-        delegate = this.activity as MediaProgressBarDelegate
     }
 
     companion object {
