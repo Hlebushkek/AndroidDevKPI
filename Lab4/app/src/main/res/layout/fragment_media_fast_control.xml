@@ -21,23 +21,33 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.5">
 
-            <Button
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/backwardButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="-5" />
+                app:srcCompat="@drawable/ic_baseline_replay_5_32" />
 
-            <Button
+            <Space
+                android:layout_width="32dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/toggleButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:icon="@android:drawable/ic_media_play" />
+                app:srcCompat="@drawable/ic_baseline_play_arrow_32" />
 
-            <Button
+            <Space
+                android:layout_width="32dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/forwardButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="+5" />
+                app:srcCompat="@drawable/ic_baseline_forward_5_32" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
