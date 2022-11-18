@@ -14,6 +14,8 @@ class MediaFastControl : Fragment() {
 
     var delegate: MediaFastControlDelegate? = null
 
+    private val toggleButtonIcons = arrayOf(R.drawable.ic_baseline_play_arrow_32, R.drawable.ic_baseline_pause_32)
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -27,8 +29,22 @@ class MediaFastControl : Fragment() {
         return binding.root
     }
 
+    fun setControlEnabled(b: Boolean) {
+        binding.backwardButton.isClickable = b
+        binding.forwardButton.isClickable = b
+        binding.toggleButton.isClickable = b
+    }
+
+     fun toggleIcon() {
+        binding.toggleButton.setImageResource(toggleButtonIcons[0])
+        val temp = toggleButtonIcons[0]
+        toggleButtonIcons[0] = toggleButtonIcons[1]
+        toggleButtonIcons[1] = temp
+    }
+
     private fun toggleMedia(view: View) {
         delegate?.mediaDidToggle()
+        toggleIcon()
     }
 
     private fun fastForward(view: View) {

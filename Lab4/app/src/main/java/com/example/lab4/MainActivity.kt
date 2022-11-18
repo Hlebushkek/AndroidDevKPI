@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Point
-import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.net.ConnectivityManager
 import android.net.Uri
@@ -14,16 +13,14 @@ import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.net.NetworkCapabilities
+import android.view.animation.AccelerateInterpolator
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.net.toUri
 import com.example.lab4.databinding.ActivityMainBinding
-
 
 class MainActivity : AppCompatActivity(), MediaPlayerDelegate, MediaFastControlDelegate,
     MediaProgressBarDelegate {
@@ -38,13 +35,6 @@ class MainActivity : AppCompatActivity(), MediaPlayerDelegate, MediaFastControlD
     private var mediaPlayer: MediaPlayer? = null
     private var currentURI: Uri? = null
     private var currentMediaProgressHandler: Handler? = null
-    private var playBackPosition: Int = 0
-
-    private var animations = ArrayList<Animation>()
-    companion object {
-        const val FADE_IN: Int = 0
-        const val FADE_OUT: Int = 1
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,9 +44,6 @@ class MainActivity : AppCompatActivity(), MediaPlayerDelegate, MediaFastControlD
 
     override fun onStart() {
         super.onStart()
-
-        animations.add(AnimationUtils.loadAnimation(this, R.anim.fade_in))
-        animations.add(AnimationUtils.loadAnimation(this, R.anim.fade_out))
 
         mediaFragment = binding.playerPlaceholder.getFragment()
         mediaFragment.delegate = this
@@ -106,19 +93,27 @@ class MainActivity : AppCompatActivity(), MediaPlayerDelegate, MediaFastControlD
             setSurfaceDimensions(player, width, height)
         }
 
-        mediaProgress.setProgress(0)
         updateMediaProgressHandler()
 
         mediaPlayer?.start()
     }
 
     private fun updateMediaProgressHandler() {
+        mediaProgress.setProgress(0)
+
         currentMediaProgressHandler = Handler(Looper.getMainLooper())
         currentMediaProgressHandler?.postDelayed(object: Runnable {
             override fun run() {
                 mediaPlayer?.let {
-                    mediaProgress.setProgress((it.currentPosition.toFloat() / it.duration.toFloat() * 100).toInt())
-                    currentMediaProgressHandler?.postDelayed(this, 1000)
+                    val value = (it.currentPosition.toFloat() / it.duration.toFloat() * 100)
+                    mediaProgress.setProgress(value.toInt())
+
+                    if (mediaPlayer?.isPlaying != true) {
+                        mediaFastControl.toggleIcon()
+                        currentMediaProgressHandler?.removeCallbacksAndMessages(null)
+                    } else {
+                        currentMediaProgressHandler?.postDelayed(this, 1000)
+                    }
                 }
             }
         }, 0)
@@ -174,8 +169,18 @@ class MainActivity : AppCompatActivity(), MediaPlayerDelegate, MediaFastControlD
     }
 
     override fun surfaceDidClicked() {
-        binding.fastControlPlaceholder.startAnimation(animations[FADE_OUT])
+//        binding.fastControlPlaceholder.startAnimation(animations[FADE_OUT])
+        val currentAlpha = binding.fastControlPlaceholder.alpha
+        binding.fastControlPlaceholder
+            .animate()
+            .setInterpolator(AccelerateInterpolator())
+            .setDuration(500)
+            .alpha(1 - currentAlpha)
+            .withEndAction {
+                mediaFastControl.setControlEnabled((1 - currentAlpha).toInt().toBoolean())
+            }
     }
+    private fun Int.toBoolean() = this == 1
 
     //Player Control Delegate
     override fun mediaDidFastForwardBy(value: Int) {
@@ -186,7 +191,10 @@ class MainActivity : AppCompatActivity(), MediaPlayerDelegate, MediaFastControlD
 
     override fun mediaDidToggle() {
         mediaPlayer?.let {
-            if (it.isPlaying) it.pause() else it.start()
+            if (it.isPlaying) it.pause() else {
+                updateMediaProgressHandler()
+                it.start()
+            }
         }
     }
 
