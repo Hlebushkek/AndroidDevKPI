@@ -1,12 +1,16 @@
 package com.example.lab1
 
 import android.graphics.Typeface
+import android.graphics.fonts.FontFamily
+import android.graphics.fonts.SystemFonts
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.lab1.databinding.ActivityMainBinding
+import java.lang.reflect.Type
 
 class MainActivity : AppCompatActivity(),
     StyleSelectionFragmentDelegate, FontSelectionFragmentDelegate {
@@ -16,21 +20,18 @@ class MainActivity : AppCompatActivity(),
     private lateinit var styleSelectionFrag: SelectionButtonsFragment
     private lateinit var fontSelectionFrag: FontSelectionFragment
 
-    private val availableFonts = arrayOf(
-        "sans-serif", "sans-serif-light", "monospace", "cursive", "casual",
-        "times-new-roman", "palatino"
-    )
+    private val availableFonts = arrayListOf<String>()
 
     private var selectedStyle: Int = 0
-    private var selectedFontName: String = ""
+    private var selectedFontIndex: Int = 0
 
     fun applyFont(view: View) {
         val text = binding.textInputEditText.text.toString()
         if (text.isEmpty()) { return }
 
-        val typeFace = Typeface.create(selectedFontName, selectedStyle) //Always return value
-
-        val dialog = PopupDialogFragment(text, typeFace)
+        var typeface = Typeface.createFromFile(availableFonts[selectedFontIndex])
+        typeface = Typeface.create(typeface, selectedStyle)
+        val dialog = PopupDialogFragment(text, typeface)
 
         dialog.show(supportFragmentManager, "popup")
     }
@@ -60,7 +61,22 @@ class MainActivity : AppCompatActivity(),
     override fun onStart() {
         super.onStart()
 
-        fontSelectionFrag.setupWith(availableFonts)
+        val fontFolderPath = "/system/fonts/"
+        val fontExt = arrayOf(".ttf", ".otf", ".ttc")
+        var fontNames = arrayListOf<String>()
+        SystemFonts.getAvailableFonts().forEach { font ->
+            val fontPath = font.file?.path.toString()
+            availableFonts.add(fontPath)
+
+            var fontName = fontPath.removePrefix(fontFolderPath)
+            fontExt.forEach { ext ->
+                fontName = fontName.removeSuffix(ext)
+            }
+            fontNames.add(fontName)
+            Log.d("!!!", fontName)
+        }
+
+        fontSelectionFrag.setupWith(fontNames.toTypedArray())
     }
 
     //MARK: Implement Interfaces
@@ -69,8 +85,9 @@ class MainActivity : AppCompatActivity(),
         selectedStyle = type
     }
 
-    override fun fontSelectionDidChange(name: String) {
-        selectedFontName = name
+    override fun fontSelectionDidChange(index: Int) {
+        selectedFontIndex = index
+        styleSelectionFrag.setupFor(availableFonts[index])
     }
 
     //MARK: Helpers

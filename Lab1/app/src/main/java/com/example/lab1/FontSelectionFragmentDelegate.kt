@@ -1,5 +1,5 @@
 package com.example.lab1
 
 interface FontSelectionFragmentDelegate {
-    fun fontSelectionDidChange(name: String)
+    fun fontSelectionDidChange(index: Int)
 }

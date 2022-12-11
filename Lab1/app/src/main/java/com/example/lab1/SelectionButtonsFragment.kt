@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import androidx.core.view.children
+import androidx.core.view.forEach
 import com.example.lab1.databinding.ActivityMainBinding
 import com.example.lab1.databinding.FragmentSelectionButtonsBinding
 
@@ -34,7 +35,18 @@ class SelectionButtonsFragment : Fragment() {
         return binding.root
     }
 
-    public fun reset() {
+    fun setupFor(fontName: String) {
+        if (fontName.lowercase().contains("bold")) {
+            binding.boldRB.isEnabled = false
+            binding.boldAndItalicRB.isEnabled = false
+        } else {
+            binding.styleRadioGroup.forEach {
+                it.isEnabled = true
+            }
+        }
+    }
+
+    fun reset() {
         binding.styleRadioGroup.check(binding.styleRadioGroup.children.first().id)
     }
 
