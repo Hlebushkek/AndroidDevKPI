@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.children
+import androidx.core.view.forEach
 import com.example.lab1.databinding.FragmentFontStyleSelectionBinding
 
 class FontStyleSelectionFragment : Fragment() {
@@ -29,6 +30,17 @@ class FontStyleSelectionFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    fun setupFor(fontName: String) {
+        if (fontName.lowercase().contains("bold")) {
+            binding.boldRB.isEnabled = false
+            binding.boldAndItalicRB.isEnabled = false
+        } else {
+            binding.styleRadioGroup.forEach {
+                it.isEnabled = true
+            }
+        }
     }
 
     public fun reset() {

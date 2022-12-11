@@ -17,11 +17,6 @@ class FontSelectionFragment : Fragment() {
 
     var delegate: FontSelectionFragmentDelegate? = null
 
-    private val availableFonts = arrayOf(
-        "sans-serif", "sans-serif-light", "monospace", "cursive", "casual",
-        "times-new-roman", "palatino"
-    )
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -30,10 +25,9 @@ class FontSelectionFragment : Fragment() {
 
         binding.fontRadioGroup.setOnCheckedChangeListener { group, id ->
             val radio = group.findViewById<RadioButton>(id)
-            delegate?.fontSelectionDidChange(radio.text.toString())
+            val index: Int = group.indexOfChild(radio)
+            delegate?.fontSelectionDidChange(index)
         }
-
-        setupFonts()
 
         return binding.root
     }
@@ -42,7 +36,7 @@ class FontSelectionFragment : Fragment() {
         binding.fontRadioGroup.check(binding.fontRadioGroup.children.first().id)
     }
 
-    private fun setupFonts() {
+    fun setupFonts(availableFonts: ArrayList<String>) {
         for (name in availableFonts) {
             val button = RadioButton(context)
             button.text = name
