@@ -1,6 +1,7 @@
 package com.example.lab1
 
 import android.graphics.Typeface
+import android.graphics.fonts.Font
 import android.graphics.fonts.SystemFonts
 import android.os.Bundle
 import android.util.Log
@@ -22,8 +23,7 @@ class MainFragment : Fragment(),
 
     private lateinit var dbHelper: LabSQLiteHelper
 
-    private val availableFonts = arrayListOf<String>()
-    private val availableFontsName = arrayListOf<String>()
+    private val fontManager = FontsManager.newInstance()
 
     private var selectedStyle: Int = 0
     private var selectedFontIndex: Int = 0
@@ -33,12 +33,12 @@ class MainFragment : Fragment(),
             val text = binding.textInputEditText.text.toString()
             if (text.isEmpty()) { return }
 
-            var typeface = Typeface.createFromFile(availableFonts[selectedFontIndex])
+            var typeface = Typeface.createFromFile(fontManager.availableFonts[selectedFontIndex])
             typeface = Typeface.create(typeface, selectedStyle)
             val dialog = PopupDialogFragment(text, typeface)
 
             dialog.onDismissCallback = {
-                dbHelper.addHistoryUnit(text, availableFontsName[selectedFontIndex], selectedStyle)
+                dbHelper.addHistoryUnit(text, fontManager.availableFontsName[selectedFontIndex], selectedStyle)
                 Snackbar.make(binding.root, "Info was saved to history", 500).show()
             }
 
@@ -58,24 +58,11 @@ class MainFragment : Fragment(),
     override fun onStart() {
         super.onStart()
 
-        val fontFolderPath = "/system/fonts/"
-        val fontExt = arrayOf(".ttf", ".otf", ".ttc")
-        SystemFonts.getAvailableFonts().forEach { font ->
-            val fontPath = font.file?.path.toString()
-            availableFonts.add(fontPath)
-
-            var fontName = fontPath.removePrefix(fontFolderPath)
-            fontExt.forEach { ext ->
-                fontName = fontName.removeSuffix(ext)
-            }
-            availableFontsName.add(fontName)
-        }
-
         styleSelectionFrag = binding.fontStyleSelectionPlaceholder.getFragment()
         styleSelectionFrag.delegate = this
 
         fontSelectionFrag = binding.fontSelectionPlaceholder.getFragment()
-        fontSelectionFrag.setupFonts(availableFontsName)
+        fontSelectionFrag.setupFonts(fontManager.availableFontsName)
         fontSelectionFrag.delegate = this
     }
 
@@ -108,7 +95,7 @@ class MainFragment : Fragment(),
 
     override fun fontSelectionDidChange(index: Int) {
         selectedFontIndex = index
-        styleSelectionFrag.setupFor(availableFonts[index])
+        styleSelectionFrag.setupFor(fontManager.availableFonts[index])
     }
 
     companion object {
